@@ -1,6 +1,5 @@
 import 'package:expense_tracker/widgets/expenses.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 var kColorScheme =
     ColorScheme.fromSeed(seedColor: const Color.fromARGB(1, 226, 28, 87));
@@ -10,10 +9,12 @@ var kColorDarkScheme = ColorScheme.fromSeed(
 );
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]).then((value){runApp(MaterialApp(
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  // ]).then((value){} );
+
+  runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     darkTheme: ThemeData.dark().copyWith(
       useMaterial3: true,
@@ -46,13 +47,13 @@ void main() {
         ),
       ),
       textTheme: ThemeData().textTheme.copyWith(
-        titleLarge: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: kColorScheme.onSecondaryContainer,
-          fontSize: 17,
-        ),
-      ),
+            titleLarge: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: kColorScheme.onSecondaryContainer,
+              fontSize: 17,
+            ),
+          ),
     ),
     home: Expenses(),
-  ));} );
+  ));
 }

@@ -39,6 +39,7 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(context) {
+    final width = MediaQuery.of(context).size.width;
     if (_registeredExpenses.isNotEmpty) {
       log("Registered expense is not empty setting main content");
       mainContent = ExpenseList(
@@ -56,12 +57,19 @@ class _ExpensesState extends State<Expenses> {
                 onPressed: _openAddExpenseOverlay, icon: Icon(Icons.add)),
           ],
         ),
-        body: Column(
-          children: [
-            Chart(expenses: _registeredExpenses),
-            Expanded(child: mainContent),
-          ],
-        ),
+        body: width < 600
+            ? Column(
+                children: [
+                  Chart(expenses: _registeredExpenses),
+                  Expanded(child: mainContent),
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(child: Chart(expenses: _registeredExpenses)),
+                  Expanded(child: mainContent),
+                ],
+              ),
       ),
     );
   }
