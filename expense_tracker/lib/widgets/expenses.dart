@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:expense_tracker/manage_expense.dart';
 import 'package:expense_tracker/models/expense.dart';
+import 'package:expense_tracker/widgets/chart/chart.dart';
 import 'package:expense_tracker/widgets/expenses_list/expense_list.dart';
 import 'package:flutter/material.dart';
 
@@ -16,14 +18,15 @@ class Expenses extends StatefulWidget {
 }
 
 class _ExpensesState extends State<Expenses> {
-  final List<Expense> _registeredExpenses = [];
+  List<Expense> _registeredExpenses = [];
   Widget mainContent =
       const Center(child: Text('No Expenses found. Please add new expense.'));
 
   @override
-  void initState() {
+  initState() {
     // TODO: implement initState
     log("All Expenses ::: ${_registeredExpenses.toString()}");
+    setExpenses();
     super.initState();
   }
 
@@ -36,44 +39,28 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(context) {
-    if (_registeredExpenses.isNotEmpty)
+    if (_registeredExpenses.isNotEmpty) {
+      log("Registered expense is not empty setting main content");
       mainContent = ExpenseList(
         expenses: _registeredExpenses,
         onRemoveExpense: _removeExpense,
       );
+    }
     return RefreshIndicator(
       onRefresh: _refresh,
       child: Scaffold(
         appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF40d0fb), Color(0xFF35fdfd)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-          ),
           title: Text('Expense Tracker'),
           actions: [
             IconButton(
                 onPressed: _openAddExpenseOverlay, icon: Icon(Icons.add)),
           ],
         ),
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF35fdfd), Color(0xFF40d0fb)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: Column(
-            children: [
-              Text('the banner'),
-              Expanded(child: mainContent),
-            ],
-          ),
+        body: Column(
+          children: [
+            Chart(expenses: _registeredExpenses),
+            Expanded(child: mainContent),
+          ],
         ),
       ),
     );
@@ -86,35 +73,40 @@ class _ExpensesState extends State<Expenses> {
         builder: (ctx) => NewExpense(addNewExpense: _addNewExpense));
   }
 
-  void _addNewExpense(Expense expense) {
+  Future<void> _addNewExpense(Expense expense) async {
     setState(() {
       _registeredExpenses.add(expense);
     });
+    await ManageExpense().saveExpenseList(_registeredExpenses);
   }
 
-  void _removeExpense(Expense expense) {
+  Future<void> _removeExpense(Expense expense) async {
     final expenseIndex = _registeredExpenses.indexOf(expense);
     setState(() {
-      print("Removing expense ::: ${expense.toString()}");
-      print("Index of expense while removing ::: $expenseIndex");
       _registeredExpenses.removeAt(expenseIndex);
     });
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Deleted'),
+        content: Text('Deleting...'),
         duration: Duration(seconds: 3),
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () {
-            print("Undo Click for ${expense.toString()}");
-            print("Index ::: $expenseIndex");
             setState(() {
               _registeredExpenses.insert(expenseIndex, expense);
+              ManageExpense().saveExpenseList(_registeredExpenses);
             });
           },
         ),
       ),
     );
+    await ManageExpense().saveExpenseList(_registeredExpenses);
+  }
+
+  Future<void> setExpenses() async {
+    _registeredExpenses = await ManageExpense().getExpenseList();
+    setState(() {});
+    log("Shared prefs expenses ::: ${_registeredExpenses.toString()}");
   }
 }

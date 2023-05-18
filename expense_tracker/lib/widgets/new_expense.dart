@@ -4,12 +4,12 @@ import 'package:expense_tracker/models/expense.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-final formatter = DateFormat('d/M/y');
+final formatter = DateFormat('dd/MM/yyyy');
 
 class NewExpense extends StatefulWidget {
   const NewExpense({super.key, required this.addNewExpense});
 
-  final void Function(Expense newExpense) addNewExpense;
+  final Future<void> Function(Expense newExpense) addNewExpense;
 
   @override
   State<NewExpense> createState() {
@@ -139,12 +139,12 @@ class _NewExpenseState extends State<NewExpense> {
           date: _selectedDate!,
           category: _selectedCategory!);
       log("Adding Expense ::: $newExpense");
-      widget.addNewExpense(newExpense!);
+      addExpense(newExpense);
       Navigator.pop(context);
     }
   }
 
-  void selectDate() async {
+  Future<void> selectDate() async {
     final initialDate = DateTime.now();
     final firstDate =
         DateTime(initialDate.year - 1, initialDate.month, initialDate.day);
@@ -160,5 +160,9 @@ class _NewExpenseState extends State<NewExpense> {
     setState(() {
       _selectedDate = pickedDate;
     });
+  }
+
+  Future<void> addExpense(Expense? newExpense) async {
+    await widget.addNewExpense(newExpense!);
   }
 }
