@@ -1,9 +1,14 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
 import 'package:meals_app/data/dummy_data.dart';
 import 'package:meals_app/widget/category_grid_item.dart';
 
-class CategoryGrid extends StatelessWidget {
-  const CategoryGrid({super.key});
+import '../model/category.dart';
+import 'meals.dart';
+
+class CategoryGridScreen extends StatelessWidget {
+  const CategoryGridScreen({super.key});
 
   @override
   Widget build(context) {
@@ -16,8 +21,25 @@ class CategoryGrid extends StatelessWidget {
         childAspectRatio: 3 / 2,
       ),
       children: availableCategories
-          .map((category) => CategoryGridItem(category: category))
+          .map((category) => CategoryGridItem(
+              category: category,
+              onSelectCategory: () {
+                _onSelectCategory(context, category);
+              }))
           .toList(),
+    );
+  }
+
+  void _onSelectCategory(BuildContext context, Category category) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          log('CATEGORY_GRID_ITEM CLICKED::: ${category.title}');
+          log('CATEGORY_GRID_ITEM CLICKED::: ${category.id}');
+          return MealsScreen(title: category.title, categoryId: category.id);
+        },
+      ),
     );
   }
 }
