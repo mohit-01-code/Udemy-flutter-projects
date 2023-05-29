@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meals_app/model/category.dart';
 
 class CategoryGridItem extends StatelessWidget {
-  CategoryGridItem(
+  const CategoryGridItem(
       {super.key, required this.category, required this.onSelectCategory});
 
   final Category category;

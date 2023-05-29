@@ -9,12 +9,12 @@ class MealItem extends StatelessWidget {
 
   final void Function() onMealPressed;
 
-  MealItem({super.key, required this.meal, required this.onMealPressed});
+  const MealItem({super.key, required this.meal, required this.onMealPressed});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(8),
+      margin: const EdgeInsets.all(8),
       clipBehavior: Clip.hardEdge,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: InkWell(
@@ -28,7 +28,7 @@ class MealItem extends StatelessWidget {
             left: 0,
             right: 0,
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
               color: Colors.black54,
               child: Column(
                 children: [
