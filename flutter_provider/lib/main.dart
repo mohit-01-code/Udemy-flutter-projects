@@ -6,6 +6,7 @@ import 'package:flutter_provider/home_screen.dart';
 import 'package:flutter_provider/provider/count_provider.dart';
 import 'package:flutter_provider/screen/favourite/favourite_screen.dart';
 import 'package:flutter_provider/screen/opacity_screen.dart';
+import 'package:flutter_provider/screen/value_notifier_screen.dart';
 import 'package:flutter_provider/statefull_screen.dart';
 import 'package:flutter_provider/why_provider.dart';
 import 'package:provider/provider.dart';
@@ -37,8 +38,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => OpacityProvider()),
         ChangeNotifierProvider(create: (_) => FavouriteProvider()),
       ],
-      child: const MaterialApp(
-        home: FavouriteScreen(),
+      child: MaterialApp(
+        home: ValueNotifierScreen(),
       ),
     );
   }
