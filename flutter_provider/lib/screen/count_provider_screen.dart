@@ -42,8 +42,8 @@ class _CountProviderScreenState extends State<CountProviderScreen> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Seconds ::: ${countProvider.seconds}'),
-                Text('Counts ::::::: ${countProvider.count}'),
+                Text('Seconds ::: ${value.seconds}'),
+                Text('Counts ::::::: ${value.count}'),
               ],
             );
           },
