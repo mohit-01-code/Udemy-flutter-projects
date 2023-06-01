@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_provider/provider/favourite_provider.dart';
 import 'package:flutter_provider/provider/opacity_provider.dart';
 import 'package:flutter_provider/screen/count_provider_screen.dart';
 import 'package:flutter_provider/home_screen.dart';
 import 'package:flutter_provider/provider/count_provider.dart';
+import 'package:flutter_provider/screen/favourite/favourite_screen.dart';
 import 'package:flutter_provider/screen/opacity_screen.dart';
 import 'package:flutter_provider/statefull_screen.dart';
 import 'package:flutter_provider/why_provider.dart';
@@ -33,9 +35,10 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => CountProvider()),
         ChangeNotifierProvider(create: (_) => OpacityProvider()),
+        ChangeNotifierProvider(create: (_) => FavouriteProvider()),
       ],
       child: const MaterialApp(
-        home: OpacityScreen(),
+        home: FavouriteScreen(),
       ),
     );
   }
