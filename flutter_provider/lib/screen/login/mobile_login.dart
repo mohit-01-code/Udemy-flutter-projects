@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_provider/provider/login_provider.dart';
 import 'package:provider/provider.dart';
 
-class LoginScreen extends StatelessWidget {
+import '../../provider/login_provider.dart';
+import 'login_screen.dart';
+
+class MobileLoginScreen extends StatelessWidget {
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _passwordTextController = TextEditingController();
 
-  LoginScreen({super.key});
+  MobileLoginScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final loginProvider = Provider.of<LoginProvider>(context);
+    mq = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login"),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(mq.width * 0.1),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
