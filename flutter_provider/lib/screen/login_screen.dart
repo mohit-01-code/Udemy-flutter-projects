@@ -14,6 +14,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login"),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -49,13 +50,13 @@ class LoginScreen extends StatelessWidget {
                 print("\"${_emailTextController.text.toString()}\"");
                 print("\"${_passwordTextController.text.toString()}\"");
                 loginProvider.login(_emailTextController.text.toString(),
-                    _passwordTextController.text.toString());
+                    _passwordTextController.text.toString(), context);
               },
               child: Container(
                 height: 50,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: Colors.red,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                 ),
                 child: Center(
                   child: loginProvider.isLoading
