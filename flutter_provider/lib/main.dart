@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_provider/provider/favourite_provider.dart';
+import 'package:flutter_provider/provider/login_provider.dart';
 import 'package:flutter_provider/provider/opacity_provider.dart';
 import 'package:flutter_provider/screen/count_provider_screen.dart';
 import 'package:flutter_provider/home_screen.dart';
 import 'package:flutter_provider/provider/count_provider.dart';
 import 'package:flutter_provider/screen/favourite/favourite_screen.dart';
+import 'package:flutter_provider/screen/login_screen.dart';
 import 'package:flutter_provider/screen/opacity_screen.dart';
 import 'package:flutter_provider/screen/value_notifier_screen.dart';
 import 'package:flutter_provider/statefull_screen.dart';
@@ -37,9 +39,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CountProvider()),
         ChangeNotifierProvider(create: (_) => OpacityProvider()),
         ChangeNotifierProvider(create: (_) => FavouriteProvider()),
+        ChangeNotifierProvider(create: (_) => LoginProvider()),
       ],
       child: MaterialApp(
-        home: ValueNotifierScreen(),
+        home: LoginScreen(),
       ),
     );
   }

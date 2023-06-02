@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class FavouriteProvider extends ChangeNotifier {
   List<int> _favourites = [];
