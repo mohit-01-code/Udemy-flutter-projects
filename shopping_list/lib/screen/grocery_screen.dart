@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:shopping_list/data/grocery_data.dart';
 import 'package:shopping_list/screen/new_item_screen.dart';
@@ -11,7 +10,6 @@ class GroceryScreen extends StatefulWidget {
 }
 
 class _GroceryScreenState extends State<GroceryScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +22,11 @@ class _GroceryScreenState extends State<GroceryScreen> {
               .copyWith(color: Theme.of(context).colorScheme.background),
         ),
         actions: [
-          IconButton(onPressed: _addItem, icon: Icon(Icons.add, color: Theme.of(context).colorScheme.background),),
+          IconButton(
+            onPressed: _addItem,
+            icon: Icon(Icons.add,
+                color: Theme.of(context).colorScheme.background),
+          ),
         ],
       ),
       body: Column(
@@ -43,9 +45,9 @@ class _GroceryScreenState extends State<GroceryScreen> {
       ),
     );
   }
-  void _addItem(){
-    Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => const NewItemScreen()));
+
+  void _addItem() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (ctx) => NewItemScreen()));
   }
-
 }
-

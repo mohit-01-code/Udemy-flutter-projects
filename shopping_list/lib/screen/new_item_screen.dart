@@ -4,7 +4,8 @@ import 'package:shopping_list/data/categories.dart';
 import '../main.dart';
 
 class NewItemScreen extends StatelessWidget {
-  const NewItemScreen({super.key});
+  final _formKey = GlobalKey<FormState>();
+  NewItemScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,7 @@ class NewItemScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Form(
+          key: _formKey,
           child: Column(
             children: [
               TextFormField(
@@ -30,7 +32,11 @@ class NewItemScreen extends StatelessWidget {
                   label: Text("Name"),
                 ),
                 validator: (value) {
-                  return "demo...";
+                  if (value == null ||
+                      value.isEmpty ||
+                      value.trim().length <= 1 ||
+                      value.trim().length > 50) return "Invalid Name Entered";
+                  return null;
                 },
               ),
               SizedBox(
@@ -42,8 +48,17 @@ class NewItemScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: TextFormField(
+                        keyboardType: TextInputType.number,
                         decoration:
                             const InputDecoration(label: Text("Quantity")),
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              int.tryParse(value) == null ||
+                              int.tryParse(value)! <= 0)
+                            return "Invalid Quantity Entered";
+                          return null;
+                        },
                       ),
                     ),
                     SizedBox(width: mq.width * 0.1),
@@ -110,10 +125,38 @@ class NewItemScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+              SizedBox(
+                height: mq.height * 0.05,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  TextButton(onPressed: () {}, child: const Text("Reset")),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  ElevatedButton(
+                      onPressed: _saveItem,
+                      child: Text(
+                        "Add Item",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(
+                                color:
+                                    Theme.of(context).colorScheme.background),
+                      )),
+                ],
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _saveItem() {
+    //this will automatic trigger validator according to form key of Form
+    _formKey.currentState!.validate();
   }
 }
