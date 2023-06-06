@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_list/data/grocery_data.dart';
+import 'package:shopping_list/model/grocery_item.dart';
 import 'package:shopping_list/screen/new_item_screen.dart';
 
 class GroceryScreen extends StatefulWidget {
   const GroceryScreen({super.key});
-
   @override
   State<GroceryScreen> createState() => _GroceryScreenState();
 }
 
 class _GroceryScreenState extends State<GroceryScreen> {
+  List<GroceryItem> groceryItemList = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,25 +29,54 @@ class _GroceryScreenState extends State<GroceryScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: groceryItems.map((grocery) {
-          return ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-            title: Text(grocery.name),
-            trailing: Text(grocery.quantity.toString()),
-            leading: Container(
-              height: 20,
-              width: 20,
-              color: grocery.category.color,
+      body: (groceryItemList.isNotEmpty)
+          ? Column(
+              children: groceryItemList.map((grocery) {
+                return Dismissible(
+                  key: ValueKey(grocery.id),
+                  onDismissed: (direction) {
+                    setState(() {
+                      groceryItemList.remove(grocery);
+                    });
+                  },
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                    title: Text(grocery.name),
+                    trailing: Text(grocery.quantity.toString()),
+                    leading: Container(
+                      height: 20,
+                      width: 20,
+                      color: grocery.category.color,
+                    ),
+                  ),
+                );
+              }).toList(),
+            )
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Oops...No Item to Display",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const Text("Please Add New Item"),
+                ],
+              ),
             ),
-          );
-        }).toList(),
-      ),
     );
   }
 
-  void _addItem() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (ctx) => NewItemScreen()));
+  void _addItem() async {
+    final groceryItem = await Navigator.of(context).push<GroceryItem>(
+      MaterialPageRoute(
+        builder: (ctx) => const NewItemScreen(),
+      ),
+    );
+    if (groceryItem != null) {
+      setState(() {
+        groceryItemList.add(groceryItem);
+      });
+    }
   }
 }
