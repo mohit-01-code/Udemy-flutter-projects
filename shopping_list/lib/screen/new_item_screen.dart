@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'dart:developer';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shopping_list/data/categories.dart';
 
@@ -64,6 +65,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
+                    flex: 1,
                     child: TextFormField(
                       keyboardType: TextInputType.number,
                       decoration:
@@ -84,6 +86,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
                   ),
                   SizedBox(width: mq.width * 0.1),
                   Expanded(
+                    flex: 2,
                     child: DropdownButtonFormField(
                       items: [
                         for (final category in categories.entries)
@@ -150,10 +153,18 @@ class _NewItemScreenState extends State<NewItemScreen> {
     //this will automatic trigger validator according to form key of Form
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      log(enteredName, name: "Name:::");
-      log(enteredQuantity.toString(), name: "Quantity:::");
-      log(enteredCategory.title, name: "Category:::");
       _formKey.currentState!.reset();
+
+      final url = Uri.https(
+          'udemy-shopping-app-38674-default-rtdb.firebaseio.com',
+          'shopping-items.json');
+      http.post(url,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'name': enteredName,
+            'quantity': enteredQuantity,
+            'category': enteredCategory.title,
+          }));
       Navigator.of(context).pop(GroceryItem(
           id: DateTime.now().toString(),
           name: enteredName,
