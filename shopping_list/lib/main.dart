@@ -6,6 +6,9 @@ void main() {
 }
 
 late Size mq;
+final FIREBASE_URL = Uri.https(
+    'udemy-shopping-app-38674-default-rtdb.firebaseio.com',
+    'shopping-items.json');
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

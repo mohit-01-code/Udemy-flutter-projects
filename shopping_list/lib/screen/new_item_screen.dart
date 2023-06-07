@@ -76,7 +76,6 @@ class _NewItemScreenState extends State<NewItemScreen> {
                             int.tryParse(value) == null ||
                             int.tryParse(value)! <= 0)
                           return "Invalid Quantity Entered";
-
                         return null;
                       },
                       onSaved: (newValue) {
@@ -149,27 +148,24 @@ class _NewItemScreenState extends State<NewItemScreen> {
     );
   }
 
-  void _saveItem() {
+  void _saveItem() async {
     //this will automatic trigger validator according to form key of Form
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       _formKey.currentState!.reset();
 
-      final url = Uri.https(
-          'udemy-shopping-app-38674-default-rtdb.firebaseio.com',
-          'shopping-items.json');
-      http.post(url,
+      final response = await http.post(FIREBASE_URL,
           headers: {'Content-Type': 'application/json'},
           body: json.encode({
             'name': enteredName,
-            'quantity': enteredQuantity,
+            'quantity': enteredQuantity.toString(),
             'category': enteredCategory.title,
           }));
-      Navigator.of(context).pop(GroceryItem(
-          id: DateTime.now().toString(),
-          name: enteredName,
-          quantity: enteredQuantity,
-          category: enteredCategory));
+
+      log(response.body, name: "RESPONSE_BODY");
+      log(response.statusCode.toString(), name: "RESPONSE_STATUS_CODE");
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
     } else {
       log("Validation Failed");
     }
