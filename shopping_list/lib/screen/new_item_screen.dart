@@ -164,8 +164,13 @@ class _NewItemScreenState extends State<NewItemScreen> {
 
       log(response.body, name: "RESPONSE_BODY");
       log(response.statusCode.toString(), name: "RESPONSE_STATUS_CODE");
+      Map<String, dynamic> addedItem = json.decode(response.body);
       if (!context.mounted) return;
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(GroceryItem(
+          id: addedItem['name'],
+          name: enteredName,
+          quantity: enteredQuantity,
+          category: enteredCategory));
     } else {
       log("Validation Failed");
     }
