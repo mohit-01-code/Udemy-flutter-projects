@@ -15,6 +15,7 @@ class GroceryScreen extends StatefulWidget {
 
 class _GroceryScreenState extends State<GroceryScreen> {
   List<GroceryItem> groceryItemList = [];
+  var _isLoading = true;
 
   @override
   void initState() {
@@ -42,43 +43,46 @@ class _GroceryScreenState extends State<GroceryScreen> {
           ),
         ],
       ),
-      body: (groceryItemList.isNotEmpty)
-          ? Column(
-              children: groceryItemList.map((grocery) {
-                return Dismissible(
-                  key: ValueKey(grocery.id),
-                  onDismissed: (direction) {
-                    setState(() {
-                      groceryItemList.remove(grocery);
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : (groceryItemList.isNotEmpty)
+              ? Column(
+                  children: groceryItemList.map((grocery) {
+                    return Dismissible(
+                      key: ValueKey(grocery.id),
+                      onDismissed: (direction) {
+                        setState(() {
+                          groceryItemList.remove(grocery);
 
-                      _removeItem(grocery.id);
-                    });
-                  },
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                    title: Text(grocery.name),
-                    trailing: Text(grocery.quantity.toString()),
-                    leading: Container(
-                      height: 20,
-                      width: 20,
-                      color: grocery.category.color,
-                    ),
+                          _removeItem(grocery.id);
+                        });
+                      },
+                      child: ListTile(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 20),
+                        title: Text(grocery.name),
+                        trailing: Text(grocery.quantity.toString()),
+                        leading: Container(
+                          height: 20,
+                          width: 20,
+                          color: grocery.category.color,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                )
+              : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Oops...No Item to Display",
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const Text("Please Add New Item"),
+                    ],
                   ),
-                );
-              }).toList(),
-            )
-          : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Oops...No Item to Display",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const Text("Please Add New Item"),
-                ],
-              ),
-            ),
+                ),
     );
   }
 
@@ -102,6 +106,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
     }
     setState(() {
       groceryItemList = tempItemList;
+      _isLoading = false;
     });
   }
 

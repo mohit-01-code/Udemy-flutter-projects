@@ -21,6 +21,8 @@ class _NewItemScreenState extends State<NewItemScreen> {
 
   int enteredQuantity = 1;
 
+  var _isSending = false;
+
   Category enteredCategory = categories[Categories.vegetables]!;
 
   @override
@@ -123,21 +125,33 @@ class _NewItemScreenState extends State<NewItemScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   TextButton(
-                      onPressed: () {
-                        _formKey.currentState!.reset();
-                      },
+                      onPressed: _isSending
+                          ? null
+                          : () {
+                              _formKey.currentState!.reset();
+                            },
                       child: const Text("Reset")),
                   const SizedBox(
                     width: 10,
                   ),
                   ElevatedButton(
-                    onPressed: _saveItem,
-                    child: Text(
-                      "Add Item",
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.background,
+                    onPressed: _isSending ? null : _saveItem,
+                    child: _isSending
+                        ? const SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(),
+                          )
+                        : Text(
+                            "Add Item",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.background,
+                                ),
                           ),
-                    ),
                   ),
                 ],
               ),
@@ -151,6 +165,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
   void _saveItem() async {
     //this will automatic trigger validator according to form key of Form
     if (_formKey.currentState!.validate()) {
+      _isSending = true;
       _formKey.currentState!.save();
       _formKey.currentState!.reset();
 
