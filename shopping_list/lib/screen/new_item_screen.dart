@@ -76,8 +76,9 @@ class _NewItemScreenState extends State<NewItemScreen> {
                         if (value == null ||
                             value.isEmpty ||
                             int.tryParse(value) == null ||
-                            int.tryParse(value)! <= 0)
+                            int.tryParse(value)! <= 0) {
                           return "Invalid Quantity Entered";
+                        }
                         return null;
                       },
                       onSaved: (newValue) {
@@ -169,23 +170,43 @@ class _NewItemScreenState extends State<NewItemScreen> {
       _formKey.currentState!.save();
       _formKey.currentState!.reset();
 
-      final response = await http.post(FIREBASE_URL,
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode({
-            'name': enteredName,
-            'quantity': enteredQuantity.toString(),
-            'category': enteredCategory.title,
-          }));
+      try {
+        final response = await http.post(FIREBASE_URL,
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'name': enteredName,
+              'quantity': enteredQuantity.toString(),
+              'category': enteredCategory.title,
+            }));
 
-      log(response.body, name: "RESPONSE_BODY");
-      log(response.statusCode.toString(), name: "RESPONSE_STATUS_CODE");
-      Map<String, dynamic> addedItem = json.decode(response.body);
-      if (!context.mounted) return;
-      Navigator.of(context).pop(GroceryItem(
-          id: addedItem['name'],
-          name: enteredName,
-          quantity: enteredQuantity,
-          category: enteredCategory));
+        log(response.body, name: "RESPONSE_BODY");
+        log(response.statusCode.toString(), name: "RESPONSE_STATUS_CODE");
+        Map<String, dynamic> addedItem = json.decode(response.body);
+        if (!context.mounted) return;
+        Navigator.of(context).pop(GroceryItem(
+            id: addedItem['name'],
+            name: enteredName,
+            quantity: enteredQuantity,
+            category: enteredCategory));
+      } catch (error) {
+        _isSending = false;
+        showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              title: const Text("Exception Occur"),
+              content: Text(error.toString()),
+              actions: [
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                    },
+                    child: const Text("OK")),
+              ],
+            );
+          },
+        );
+      }
     } else {
       log("Validation Failed");
     }

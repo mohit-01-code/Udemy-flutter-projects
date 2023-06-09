@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shopping_list/data/categories.dart';
@@ -16,6 +17,7 @@ class GroceryScreen extends StatefulWidget {
 class _GroceryScreenState extends State<GroceryScreen> {
   List<GroceryItem> groceryItemList = [];
   var _isLoading = true;
+  String initialMessage = "Oops...No Item to Display";
 
   @override
   void initState() {
@@ -26,6 +28,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _getItems();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -44,7 +47,9 @@ class _GroceryScreenState extends State<GroceryScreen> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
           : (groceryItemList.isNotEmpty)
               ? Column(
                   children: groceryItemList.map((grocery) {
@@ -52,9 +57,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
                       key: ValueKey(grocery.id),
                       onDismissed: (direction) {
                         setState(() {
-                          groceryItemList.remove(grocery);
-
-                          _removeItem(grocery.id);
+                          _removeItem(grocery);
                         });
                       },
                       child: ListTile(
@@ -76,7 +79,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Oops...No Item to Display",
+                        initialMessage,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const Text("Please Add New Item"),
@@ -88,26 +91,45 @@ class _GroceryScreenState extends State<GroceryScreen> {
 
   void _getItems() async {
     List<GroceryItem> tempItemList = [];
-    final response = await http.get(FIREBASE_URL);
-    final Map<String, dynamic> data = jsonDecode(response.body);
-    print(response.body);
+    try {
+      final response = await http.get(FIREBASE_URL);
+      if (response.body == 'null') {
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      log(response.body);
+      if (response.statusCode >= 400) {
+        setState(() {
+          initialMessage = "Failed to load data from firebase";
+          _isLoading = false;
+        });
+      }
 
-    for (final item in data.entries) {
-      tempItemList.add(
-        GroceryItem(
-            id: item.key,
-            name: item.value['name'],
-            quantity: int.parse(item.value['quantity']),
-            category: categories.entries
-                .firstWhere(
-                    (element) => element.value.title == item.value['category'])
-                .value),
-      );
+      for (final item in data.entries) {
+        tempItemList.add(
+          GroceryItem(
+              id: item.key,
+              name: item.value['name'],
+              quantity: int.parse(item.value['quantity']),
+              category: categories.entries
+                  .firstWhere((element) =>
+                      element.value.title == item.value['category'])
+                  .value),
+        );
+      }
+      setState(() {
+        groceryItemList = tempItemList;
+        _isLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        initialMessage = "Some Exception Occur : ${error.toString()}";
+        _isLoading = false;
+      });
     }
-    setState(() {
-      groceryItemList = tempItemList;
-      _isLoading = false;
-    });
   }
 
   void _addItem() async {
@@ -121,11 +143,29 @@ class _GroceryScreenState extends State<GroceryScreen> {
     });
   }
 
-  void _removeItem(String id) async {
+  void _removeItem(GroceryItem item) async {
+    final index = groceryItemList.indexOf(item);
+    groceryItemList.remove(item);
+
     final url = Uri.https(
         'udemy-shopping-app-38674-default-rtdb.firebaseio.com',
-        'shopping-items/$id.json');
+        'shopping-items/${item.id}.json');
     final response = await http.delete(url);
-    print("Deleted item::: ${response.body}");
+    if (response.statusCode >= 400) {
+      groceryItemList.insert(index, item);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Deletion Failed"),
+          duration: const Duration(seconds: 3),
+          action: SnackBarAction(
+            onPressed: () {
+              setState(() {});
+            },
+            label: "Refresh",
+          ),
+        ),
+      );
+    }
+    log("Deleted item::: ${response.body}");
   }
 }
