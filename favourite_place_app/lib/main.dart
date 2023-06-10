@@ -1,5 +1,6 @@
-import 'package:favourite_place_app/screen/home_screen.dart';
+import 'package:favourite_place_app/screen/place_list.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,12 +11,28 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Favourite Place',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xff9e9e9e),
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
+
+        textTheme: GoogleFonts.ubuntuCondensedTextTheme().copyWith(
+          titleSmall: GoogleFonts.ubuntuCondensed(
+            fontWeight: FontWeight.bold,
+          ),
+          titleMedium: GoogleFonts.ubuntuCondensed(
+
+          ),
+          titleLarge: GoogleFonts.ubuntuCondensed(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
-      home: const HomeScreen(),
+      home: const PlaceListScreen(),
     );
   }
 }
