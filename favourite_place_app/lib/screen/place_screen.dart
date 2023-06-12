@@ -1,18 +1,23 @@
+import 'package:favourite_place_app/model/place.dart';
 import 'package:flutter/material.dart';
 
 class PlaceScreen extends StatelessWidget {
-  final String placeName;
+  final Place place;
 
-
-  const PlaceScreen({super.key, required this.placeName});
+  const PlaceScreen({super.key, required this.place});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(placeName),
+        title: Text(place.title),
       ),
-      body: Center(child: Text(placeName, style: Theme.of(context).textTheme.titleMedium,),),
+      body: Center(
+        child: Text(
+          place.title,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+      ),
     );
   }
 }

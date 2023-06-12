@@ -1,15 +1,22 @@
-import 'package:favourite_place_app/model/place.dart';
+import 'package:favourite_place_app/provider/user_place.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AddPlaceScreen extends StatelessWidget {
-  AddPlaceScreen({super.key});
+class AddPlaceScreen extends ConsumerStatefulWidget {
+  const AddPlaceScreen({super.key});
 
-  final _placeTextController = TextEditingController();
+  @override
+  ConsumerState<AddPlaceScreen> createState() => _AddPlaceScreenState();
+}
+
+class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
+  final _titleTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Place"),
+        title: const Text("Add Place"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -17,22 +24,29 @@ class AddPlaceScreen extends StatelessWidget {
           child: Column(
             children: [
               TextFormField(
-                  controller: _placeTextController,
+                  controller: _titleTextController,
                   style: Theme.of(context).textTheme.titleMedium!),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               ElevatedButton.icon(
-                icon: Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pop(Place(name: _placeTextController.text));
-                  },
-                  label: Text("Add Place"),)
+                icon: const Icon(Icons.add),
+                onPressed: _savePlace,
+                label: const Text("Add Place"),
+              )
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _savePlace() {
+    final enteredTitle = _titleTextController.text;
+    if (enteredTitle.isEmpty) {
+      return;
+    }
+    ref.read(userPlaceProvider.notifier).addPlace(enteredTitle);
+    Navigator.of(context).pop();
   }
 }

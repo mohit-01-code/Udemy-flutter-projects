@@ -5,10 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
   runApp(
-    const ProviderScope(child: MyApp(),),
+    const ProviderScope(
+      child: MyApp(),
+    ),
   );
 }
-  
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
@@ -22,20 +24,17 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
-
         textTheme: GoogleFonts.ubuntuCondensedTextTheme().copyWith(
           titleSmall: GoogleFonts.ubuntuCondensed(
             fontWeight: FontWeight.bold,
           ),
-          titleMedium: GoogleFonts.ubuntuCondensed(
-
-          ),
+          titleMedium: GoogleFonts.ubuntuCondensed(),
           titleLarge: GoogleFonts.ubuntuCondensed(
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      home: const PlaceListScreen(),
+      home: PlaceListScreen(),
     );
   }
 }

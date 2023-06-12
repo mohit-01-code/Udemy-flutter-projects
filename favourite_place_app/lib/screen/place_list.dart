@@ -1,36 +1,27 @@
+import 'package:favourite_place_app/provider/user_place.dart';
 import 'package:favourite_place_app/screen/place_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/place.dart';
 import 'add_place.dart';
 
-class PlaceListScreen extends StatefulWidget {
-  const PlaceListScreen({super.key});
-
-  @override
-  State<PlaceListScreen> createState() => _PlaceListScreenState();
-}
-
-class _PlaceListScreenState extends State<PlaceListScreen> {
+class PlaceListScreen extends ConsumerWidget {
+  PlaceListScreen({super.key});
   List<Place> _placeList = [];
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    _placeList = ref.watch(userPlaceProvider);
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text("Favourite Place"),
           actions: [
             IconButton(
-                onPressed: () async {
-                  final addedPlace =
-                      await Navigator.of(context).push<Place>(MaterialPageRoute(
-                    builder: (context) => AddPlaceScreen(),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const AddPlaceScreen(),
                   ));
-                  if (addedPlace != null) {
-                    setState(() {
-                      _placeList.add(addedPlace);
-                    });
-                  }
                 },
                 icon: const Icon(Icons.add)),
           ],
@@ -43,19 +34,22 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
                 ),
               )
             : ListView.builder(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 itemCount: _placeList.length,
                 itemBuilder: (context, index) {
-                  return InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => PlaceScreen(
-                                placeName: _placeList[index].name)));
-                      },
-                      child: Text(
-                        _placeList[index].name,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ));
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) =>
+                                  PlaceScreen(place: _placeList[index])));
+                        },
+                        child: Text(
+                          _placeList[index].title,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        )),
+                  );
                 },
               ));
   }
