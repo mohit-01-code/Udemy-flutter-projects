@@ -33,8 +33,14 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
               const SizedBox(
                 height: 20,
               ),
-              ImageInput(onPickImage: (File image) { _selectedImage = image; },),
-              SizedBox(height: 10,),
+              ImageInput(
+                onPickImage: (File image) {
+                  _selectedImage = image;
+                },
+              ),
+              const SizedBox(
+                height: 10,
+              ),
               ElevatedButton.icon(
                 icon: const Icon(Icons.add),
                 onPressed: _savePlace,
@@ -52,7 +58,9 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
     if (enteredTitle.isEmpty || _selectedImage == null) {
       return;
     }
-    ref.read(userPlaceProvider.notifier).addPlace(enteredTitle, _selectedImage!);
+    ref
+        .read(userPlaceProvider.notifier)
+        .addPlace(enteredTitle, _selectedImage!);
     Navigator.of(context).pop();
   }
 }

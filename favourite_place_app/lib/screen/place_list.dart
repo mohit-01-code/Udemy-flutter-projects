@@ -13,44 +13,50 @@ class PlaceListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _placeList = ref.watch(userPlaceProvider);
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text("Favourite Place"),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const AddPlaceScreen(),
-                  ));
-                },
-                icon: const Icon(Icons.add)),
-          ],
-        ),
-        body: _placeList.isEmpty
-            ? Center(
-                child: Text(
-                  "No Place Added Yet",
-                  style: Theme.of(context).textTheme.titleMedium!,
-                ),
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: _placeList.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) =>
-                                  PlaceScreen(place: _placeList[index])));
-                        },
-                        child: Text(
-                          _placeList[index].title,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        )),
-                  );
-                },
-              ));
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text("Favourite Place"),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const AddPlaceScreen(),
+                ));
+              },
+              icon: const Icon(Icons.add)),
+        ],
+      ),
+      body: _placeList.isEmpty
+          ? Center(
+              child: Text(
+                "No Place Added Yet",
+                style: Theme.of(context).textTheme.titleMedium!,
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: _placeList.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  contentPadding: const EdgeInsets.all(8.0),
+                  leading: CircleAvatar(
+                    backgroundImage: FileImage(_placeList[index].image),
+                    radius: 26,
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => PlaceScreen(place: _placeList[index]),
+                      ),
+                    );
+                  },
+                  title: Text(
+                    _placeList[index].title,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                );
+              },
+            ),
+    );
   }
 }
