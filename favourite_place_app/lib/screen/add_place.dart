@@ -16,6 +16,7 @@ class AddPlaceScreen extends ConsumerStatefulWidget {
 class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
   final _titleTextController = TextEditingController();
   File? _selectedImage;
+  double? _lat, _long;
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +40,13 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
                   _selectedImage = image;
                 },
               ),
-              SizedBox(height: 10,),
-              LocationInput(),
+              const SizedBox(
+                height: 10,
+              ),
+              LocationInput(onSelectLocation: (double lat, double long) {
+                _lat = lat;
+                _long = long;
+              }),
               const SizedBox(
                 height: 10,
               ),
@@ -58,12 +64,15 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
 
   void _savePlace() {
     final enteredTitle = _titleTextController.text;
-    if (enteredTitle.isEmpty || _selectedImage == null) {
+    if (enteredTitle.isEmpty ||
+        _selectedImage == null ||
+        _lat == null ||
+        _long == null) {
       return;
     }
     ref
         .read(userPlaceProvider.notifier)
-        .addPlace(enteredTitle, _selectedImage!);
+        .addPlace(enteredTitle, _selectedImage!, _lat!, _long!);
     Navigator.of(context).pop();
   }
 }

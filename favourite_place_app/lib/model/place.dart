@@ -8,5 +8,11 @@ class Place {
   final String id;
   final String title;
   final File image;
-  Place({required this.title, required this.image}) : id = uuid.v1();
+  final double lat, long;
+  Place(
+      {required this.title,
+      required this.image,
+      required this.lat,
+      required this.long})
+      : id = uuid.v1();
 }
