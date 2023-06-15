@@ -20,7 +20,7 @@ class PlaceScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            height: 160,
+            height: 250,
             margin: const EdgeInsets.all(8.0),
             child: Image.file(
               place.image,

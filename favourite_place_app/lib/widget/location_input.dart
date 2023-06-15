@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class LocationInput extends StatefulWidget {
@@ -26,20 +27,9 @@ class _LocationInputState extends State<LocationInput> {
           decoration: BoxDecoration(
               border: Border.all(
                   width: 1, color: Theme.of(context).colorScheme.primary)),
-          child: _gettingLocation
-              ? CircularProgressIndicator(
-                  color: Theme.of(context).colorScheme.primary,
-                )
-              : Text(
-                  "No Location Chosen",
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                ),
+          child: locationPreview(),
         ),
-        const SizedBox(
-          height: 5,
-        ),
+        const SizedBox(height: 5),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -55,6 +45,34 @@ class _LocationInputState extends State<LocationInput> {
         )
       ],
     );
+  }
+
+  Widget locationPreview() {
+    Widget locationPreviewContent = Text(
+      "No Location Chosen",
+      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+    );
+    if (currentLocation != null) {
+      locationPreviewContent = GoogleMap(
+        initialCameraPosition: CameraPosition(
+          zoom: 16,
+          target: LatLng(
+            currentLocation!.latitude!,
+            currentLocation!.longitude!,
+          ),
+        ),
+      );
+      return locationPreviewContent;
+    } else if (_gettingLocation) {
+      locationPreviewContent = CircularProgressIndicator(
+        color: Theme.of(context).colorScheme.primary,
+      );
+      return locationPreviewContent;
+    }
+
+    return locationPreviewContent;
   }
 
   Future<void> _getCurrentLocation() async {
@@ -91,5 +109,11 @@ class _LocationInputState extends State<LocationInput> {
     log(currentLocation!.longitude.toString());
     widget.onSelectLocation(
         currentLocation!.latitude!, currentLocation!.longitude!);
+  }
+
+  String get locationPreviewImage {
+    //this is implementation for static image to preview map
+    if (currentLocation == null) return "";
+    return "https://maps.googleapis.com/maps/api/staticmap?center=${currentLocation!.latitude},${currentLocation!.longitude}&zoom=16&size=600x300&key=AIzaSyDV4iPX_bD_UzX3xX4XDjHxLSKaIX0RPlU";
   }
 }
