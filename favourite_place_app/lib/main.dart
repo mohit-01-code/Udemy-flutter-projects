@@ -1,4 +1,4 @@
-import 'package:favourite_place_app/screen/place_list.dart';
+import 'package:favourite_place_app/screen/places.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: PlaceListScreen(),
+      home: const PlaceListScreen(),
     );
   }
 }

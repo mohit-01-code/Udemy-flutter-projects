@@ -30,26 +30,21 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
           child: Column(
             children: [
               TextFormField(
-                  controller: _titleTextController,
-                  style: Theme.of(context).textTheme.titleMedium!),
-              const SizedBox(
-                height: 20,
+                controller: _titleTextController,
+                style: Theme.of(context).textTheme.titleMedium!,
               ),
+              const SizedBox(height: 20),
               ImageInput(
                 onPickImage: (File image) {
                   _selectedImage = image;
                 },
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               LocationInput(onSelectLocation: (double lat, double long) {
                 _lat = lat;
                 _long = long;
               }),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               ElevatedButton.icon(
                 icon: const Icon(Icons.add),
                 onPressed: _savePlace,
@@ -67,9 +62,7 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
     if (enteredTitle.isEmpty ||
         _selectedImage == null ||
         _lat == null ||
-        _long == null) {
-      return;
-    }
+        _long == null) return;
     ref
         .read(userPlaceProvider.notifier)
         .addPlace(enteredTitle, _selectedImage!, _lat!, _long!);
