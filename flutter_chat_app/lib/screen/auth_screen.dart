@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -8,7 +10,10 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  final _formKey = GlobalKey<FormState>();
   bool isLoginMode = true;
+  String _enteredEmail = '';
+  String _enteredPassword = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +34,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Form(
+                    key: _formKey,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -36,6 +42,17 @@ class _AuthScreenState extends State<AuthScreen> {
                           decoration: const InputDecoration(
                             labelText: "Email",
                           ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return "Enter Email Address";
+                            } else if (!_isValidEmail(value)) {
+                              return "Enter Valid Email Address";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _enteredEmail = value!;
+                          },
                           keyboardType: TextInputType.emailAddress,
                           autocorrect: false,
                           textCapitalization: TextCapitalization.none,
@@ -44,6 +61,15 @@ class _AuthScreenState extends State<AuthScreen> {
                           decoration: const InputDecoration(
                             labelText: "Password",
                           ),
+                          validator: (value) {
+                            if (value == null || value.trim().length < 6) {
+                              return "Password must be at least 6 characters";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _enteredPassword = value!;
+                          },
                           obscureText: true,
                         ),
                         const SizedBox(height: 12),
@@ -52,7 +78,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 backgroundColor: Theme.of(context)
                                     .colorScheme
                                     .primaryContainer),
-                            onPressed: () {},
+                            onPressed: _submit,
                             child: Text(isLoginMode ? "Login Now" : "Sign Up")),
                         TextButton(
                             onPressed: () {
@@ -73,5 +99,20 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
+  }
+
+  void _submit() {
+    final isValid = _formKey.currentState!.validate();
+    if (isValid) {
+      _formKey.currentState!.save();
+      log("SUBMIT_BUTTON_CLICKED ::: email: {$_enteredEmail}\tpassword: {$_enteredPassword}",
+          name: "auth_screen");
+    }
+  }
+
+  bool _isValidEmail(String value) {
+    final emailRegex = RegExp(
+        r'^[\w-]+(\.[\w-]+)*@[a-zA-Z\d-]+(\.[a-zA-Z\d-]+)*(\.[a-zA-Z]{2,})$');
+    return emailRegex.hasMatch(value);
   }
 }
