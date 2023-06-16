@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_app/screen/my_home_page.dart';
+import 'package:flutter_chat_app/screen/auth_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,10 +15,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.red,
+          seedColor: const Color(0xff01293f),
         ),
       ),
-      home: const MyHomePage(),
+      home: const AuthScreen(),
     );
   }
 }
