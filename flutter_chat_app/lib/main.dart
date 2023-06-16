@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/screen/auth_screen.dart';
+import 'package:flutter_chat_app/screen/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
           seedColor: const Color(0xff01293f),
         ),
       ),
-      home: const AuthScreen(),
+      home: const SplashScreen(),
     );
   }
 }
