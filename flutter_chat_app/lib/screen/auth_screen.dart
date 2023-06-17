@@ -1,6 +1,11 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../main.dart';
+
+final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -16,6 +21,8 @@ class _AuthScreenState extends State<AuthScreen> {
   String _enteredPassword = '';
   @override
   Widget build(BuildContext context) {
+    mq = MediaQuery.of(context).size;
+    final w = mq.width;
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -30,9 +37,12 @@ class _AuthScreenState extends State<AuthScreen> {
             children: [
               Image.asset('assets/images/chat-app-logo.png'),
               Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                margin: (w > 500)
+                    ? EdgeInsets.symmetric(horizontal: mq.width * 0.2)
+                    : EdgeInsets.symmetric(horizontal: mq.width * 0.05),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -101,11 +111,39 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  void _submit() {
+  void _submit() async {
     final isValid = _formKey.currentState!.validate();
-    if (isValid) {
-      _formKey.currentState!.save();
-      log("SUBMIT_BUTTON_CLICKED ::: email: {$_enteredEmail}\tpassword: {$_enteredPassword}",
+
+    if (!isValid) return;
+
+    _formKey.currentState!.save();
+    log("SUBMIT_BUTTON_CLICKED ::: email: {$_enteredEmail}\tpassword: {$_enteredPassword}",
+        name: "auth_screen");
+
+    if (isLoginMode) {
+      //login Code here
+    } else {
+      //sign up code here
+      await _signUp();
+    }
+  }
+
+  Future<void> _signUp() async {
+    try {
+      final UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
+              email: _enteredEmail, password: _enteredPassword);
+
+      log("SIGNUP_SUCCESSFULLY ::: userCredential: {${userCredential.toString()}",
+          name: "auth_screen");
+    } on FirebaseAuthException catch (error) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.toString()),
+        ),
+      );
+      log("SIGNUP_FAILED ::: exception: {${error.toString()}",
           name: "auth_screen");
     }
   }
