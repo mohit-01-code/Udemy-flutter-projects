@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/screen/auth_screen.dart';
+import 'package:flutter_chat_app/screen/chat_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,20 +14,36 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  User? _user;
+  Widget? content;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getCurrentUser();
+
+    if (_user != null) {
+      log("splash_screen : User Exist");
+      content = const ChatScreen();
+    } else {
+      log("splash_screen : User is null");
+      content = const AuthScreen();
+    }
+
     Timer(
       const Duration(seconds: 1), // Set the duration for the splash screen
       () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) =>
-              const AuthScreen(), // Replace HomeScreen with your main screen widget
+              content!, // Replace HomeScreen with your main screen widget
         ),
       ),
     );
+  }
+
+  Future<void> getCurrentUser() async {
+    _user = FirebaseAuth.instance.currentUser;
   }
 
   @override

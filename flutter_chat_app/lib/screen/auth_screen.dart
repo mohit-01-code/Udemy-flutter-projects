@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_app/screen/chat_screen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../main.dart';
 
@@ -19,6 +21,7 @@ class _AuthScreenState extends State<AuthScreen> {
   bool isLoginMode = true;
   String _enteredEmail = '';
   String _enteredPassword = '';
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     mq = MediaQuery.of(context).size;
@@ -88,17 +91,32 @@ class _AuthScreenState extends State<AuthScreen> {
                                 backgroundColor: Theme.of(context)
                                     .colorScheme
                                     .primaryContainer),
-                            onPressed: _submit,
-                            child: Text(isLoginMode ? "Login Now" : "Sign Up")),
+                            onPressed: isLoading ? null : _submit,
+                            child: isLoading
+                                ? const SizedBox(
+                                    height: 25,
+                                    width: 25,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 3,
+                                    ))
+                                : Text(isLoginMode ? "Login Now" : "Sign Up")),
                         TextButton(
-                            onPressed: () {
-                              setState(() {
-                                isLoginMode = !isLoginMode;
-                              });
-                            },
-                            child: Text(isLoginMode
-                                ? "Create An Account"
-                                : "Already have An Account"))
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                                    _formKey.currentState!.reset();
+                                    setState(() {
+                                      isLoginMode = !isLoginMode;
+                                    });
+                                  },
+                            child: isLoading
+                                ? const SizedBox(
+                                    height: 16,
+                                    width: 16,
+                                  )
+                                : Text(isLoginMode
+                                    ? "Create An Account"
+                                    : "Already have An Account"))
                       ],
                     ),
                   ),
@@ -122,35 +140,96 @@ class _AuthScreenState extends State<AuthScreen> {
 
     if (isLoginMode) {
       //login Code here
+      await _login();
     } else {
       //sign up code here
       await _signUp();
     }
   }
 
+  Future<void> _login() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final UserCredential userCredential =
+          await _firebaseAuth.signInWithEmailAndPassword(
+              email: _enteredEmail, password: _enteredPassword);
+      setState(() {
+        isLoading = false;
+      });
+      log("LOGIN_SUCCESSFULLY ::: userCredential: {${userCredential.toString()}",
+          name: "auth_screen");
+      onSuccessLogin();
+    } on FirebaseAuthException catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.toString())),
+      );
+      log("LOGIN_FAILED ::: exception: {${error.toString()}",
+          name: "auth_screen");
+    }
+  }
+
   Future<void> _signUp() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       final UserCredential userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
               email: _enteredEmail, password: _enteredPassword);
-
+      setState(() {
+        isLoading = false;
+      });
       log("SIGNUP_SUCCESSFULLY ::: userCredential: {${userCredential.toString()}",
           name: "auth_screen");
+
+      onSuccessSignUp();
     } on FirebaseAuthException catch (error) {
+      setState(() {
+        isLoading = false;
+      });
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error.toString()),
-        ),
+        SnackBar(content: Text(error.toString())),
       );
       log("SIGNUP_FAILED ::: exception: {${error.toString()}",
           name: "auth_screen");
     }
   }
 
+  void onSuccessLogin() {
+    showSuccessToast("Login Success! Welcome");
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (ctx) => const ChatScreen()));
+  }
+
   bool _isValidEmail(String value) {
     final emailRegex = RegExp(
         r'^[\w-]+(\.[\w-]+)*@[a-zA-Z\d-]+(\.[a-zA-Z\d-]+)*(\.[a-zA-Z]{2,})$');
     return emailRegex.hasMatch(value);
+  }
+
+  void onSuccessSignUp() {
+    FirebaseAuth.instance.signOut();
+    showSuccessToast("SignUp Success! Login Now");
+    setState(() {
+      isLoginMode = true;
+      _formKey.currentState!.reset();
+    });
+  }
+
+  void showSuccessToast(String msg) {
+    Fluttertoast.showToast(
+      msg: msg,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: const Color(0xff1ed760),
+      textColor: Colors.white,
+    );
   }
 }
