@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String _enteredEmail = '';
   String _enteredPassword = '';
   bool isLoading = false;
+  File? _selectedImage;
   @override
   Widget build(BuildContext context) {
     mq = MediaQuery.of(context).size;
@@ -52,7 +54,12 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (!isLoginMode) const UserImagePicker(),
+                        if (!isLoginMode)
+                          UserImagePicker(
+                            onPickImage: (pickedImage) {
+                              _selectedImage = pickedImage;
+                            },
+                          ),
                         TextFormField(
                           decoration: const InputDecoration(
                             labelText: "Email",
@@ -134,7 +141,7 @@ class _AuthScreenState extends State<AuthScreen> {
   void _submit() async {
     final isValid = _formKey.currentState!.validate();
 
-    if (!isValid) return;
+    if (!isValid || !isLoginMode && _selectedImage == null) return;
 
     _formKey.currentState!.save();
     log("SUBMIT_BUTTON_CLICKED ::: email: {$_enteredEmail}\tpassword: {$_enteredPassword}",
