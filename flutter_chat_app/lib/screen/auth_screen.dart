@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String _enteredPassword = '';
   bool isLoading = false;
   File? _selectedImage;
+  String? imgUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -207,6 +209,8 @@ class _AuthScreenState extends State<AuthScreen> {
 
       await uploadImage(userCredential);
 
+      await saveUserDetails(userCredential);
+
       log("SIGNUP_SUCCESSFULLY ::: userCredential: {${userCredential.toString()}",
           name: "auth_screen");
 
@@ -222,6 +226,16 @@ class _AuthScreenState extends State<AuthScreen> {
       log("SIGNUP_FAILED ::: exception: {${error.toString()}",
           name: "auth_screen");
     }
+  }
+
+  Future<void> saveUserDetails(UserCredential credential) async {
+    await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(credential.user!.uid)
+        .set({
+      'email': _enteredEmail,
+      'image_url': imgUrl,
+    });
   }
 
   void onSuccessLogin() {
@@ -255,8 +269,8 @@ class _AuthScreenState extends State<AuthScreen> {
         .child('${userCredential.user!.uid}.jpg');
     await storageRef.putFile(_selectedImage!);
 
-    String imgUrl = await storageRef.getDownloadURL();
-    userCredential.user!.updatePhotoURL(imgUrl);
+    imgUrl = await storageRef.getDownloadURL();
+    await userCredential.user!.updatePhotoURL(imgUrl);
     log("IMAGE_UPLOAD_SUCCESS ::: imgUrl{$imgUrl}", name: "auth_screen");
   }
 }
