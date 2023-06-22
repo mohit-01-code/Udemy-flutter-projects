@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/screen/chat_screen.dart';
 import 'package:flutter_chat_app/widget/user_image_picker.dart';
@@ -25,6 +26,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String _enteredPassword = '';
   bool isLoading = false;
   File? _selectedImage;
+
   @override
   Widget build(BuildContext context) {
     mq = MediaQuery.of(context).size;
@@ -156,6 +158,12 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  bool _isValidEmail(String value) {
+    final emailRegex = RegExp(
+        r'^[\w-]+(\.[\w-]+)*@[a-zA-Z\d-]+(\.[a-zA-Z\d-]+)*(\.[a-zA-Z]{2,})$');
+    return emailRegex.hasMatch(value);
+  }
+
   Future<void> _login() async {
     try {
       setState(() {
@@ -194,10 +202,15 @@ class _AuthScreenState extends State<AuthScreen> {
       setState(() {
         isLoading = false;
       });
+
+      onSuccessSignUp();
+
+      await uploadImage(userCredential);
+
       log("SIGNUP_SUCCESSFULLY ::: userCredential: {${userCredential.toString()}",
           name: "auth_screen");
 
-      onSuccessSignUp();
+      FirebaseAuth.instance.signOut();
     } on FirebaseAuthException catch (error) {
       setState(() {
         isLoading = false;
@@ -217,14 +230,7 @@ class _AuthScreenState extends State<AuthScreen> {
         MaterialPageRoute(builder: (ctx) => const ChatScreen()));
   }
 
-  bool _isValidEmail(String value) {
-    final emailRegex = RegExp(
-        r'^[\w-]+(\.[\w-]+)*@[a-zA-Z\d-]+(\.[a-zA-Z\d-]+)*(\.[a-zA-Z]{2,})$');
-    return emailRegex.hasMatch(value);
-  }
-
   void onSuccessSignUp() {
-    FirebaseAuth.instance.signOut();
     showSuccessToast("SignUp Success! Login Now");
     setState(() {
       isLoginMode = true;
@@ -240,5 +246,17 @@ class _AuthScreenState extends State<AuthScreen> {
       backgroundColor: const Color(0xff1ed760),
       textColor: Colors.white,
     );
+  }
+
+  Future<void> uploadImage(UserCredential userCredential) async {
+    final Reference storageRef = FirebaseStorage.instance
+        .ref()
+        .child('user_image')
+        .child('${userCredential.user!.uid}.jpg');
+    await storageRef.putFile(_selectedImage!);
+
+    String imgUrl = await storageRef.getDownloadURL();
+    userCredential.user!.updatePhotoURL(imgUrl);
+    log("IMAGE_UPLOAD_SUCCESS ::: imgUrl{$imgUrl}", name: "auth_screen");
   }
 }
