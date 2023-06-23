@@ -25,6 +25,7 @@ class _AuthScreenState extends State<AuthScreen> {
   bool isLoginMode = true;
   String _enteredEmail = '';
   String _enteredPassword = '';
+  String _enteredUsername = '';
   bool isLoading = false;
   File? _selectedImage;
   String? imgUrl;
@@ -83,6 +84,22 @@ class _AuthScreenState extends State<AuthScreen> {
                           autocorrect: false,
                           textCapitalization: TextCapitalization.none,
                         ),
+                        if (!isLoginMode)
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "Username",
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().length < 4) {
+                                return "Username Too Short";
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredUsername = value!;
+                            },
+                            keyboardType: TextInputType.name,
+                          ),
                         TextFormField(
                           decoration: const InputDecoration(
                             labelText: "Password",
@@ -204,7 +221,6 @@ class _AuthScreenState extends State<AuthScreen> {
       setState(() {
         isLoading = false;
       });
-
       onSuccessSignUp();
 
       await uploadImage(userCredential);
@@ -215,6 +231,8 @@ class _AuthScreenState extends State<AuthScreen> {
           name: "auth_screen");
 
       FirebaseAuth.instance.signOut();
+      imgUrl = null;
+      _selectedImage = null;
     } on FirebaseAuthException catch (error) {
       setState(() {
         isLoading = false;
@@ -235,6 +253,7 @@ class _AuthScreenState extends State<AuthScreen> {
         .set({
       'email': _enteredEmail,
       'image_url': imgUrl,
+      'username': _enteredUsername,
     });
   }
 
