@@ -247,6 +247,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> saveUserDetails(UserCredential credential) async {
+    credential.user!.updateDisplayName(_enteredUsername);
     await FirebaseFirestore.instance
         .collection('Users')
         .doc(credential.user!.uid)
