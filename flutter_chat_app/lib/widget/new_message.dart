@@ -46,6 +46,7 @@ class _NewMessageState extends State<NewMessage> {
       'username': user.displayName,
       'userImage': user.photoURL,
     });
+    setState(() {});
   }
 
   @override
