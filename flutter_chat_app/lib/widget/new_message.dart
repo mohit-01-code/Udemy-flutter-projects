@@ -19,13 +19,24 @@ class _NewMessageState extends State<NewMessage> {
         children: [
           Expanded(
               child: TextField(
+            style: TextStyle(color: Theme.of(context).colorScheme.background),
             controller: _messageController,
             textCapitalization: TextCapitalization.sentences,
             autocorrect: true,
             enableSuggestions: true,
-            decoration: const InputDecoration(labelText: "Send a Message"),
+            decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: "Send a Message",
+                labelStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.background)),
           )),
-          IconButton(onPressed: _sendMessage, icon: const Icon(Icons.send)),
+          IconButton(
+            onPressed: _sendMessage,
+            icon: Icon(
+              Icons.send,
+              color: Theme.of(context).colorScheme.background,
+            ),
+          ),
         ],
       ),
     );

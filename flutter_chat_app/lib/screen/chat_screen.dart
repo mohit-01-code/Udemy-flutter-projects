@@ -11,7 +11,19 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Chat screen"),
+          flexibleSpace: Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+                gradient: LinearGradient(colors: [
+              Color(0xff334e6b),
+              Color(0xff121212),
+            ], end: Alignment.bottomCenter, begin: Alignment.topCenter)),
+          ),
+          title: Text(
+            "Chat screen",
+            style: TextStyle(color: Theme.of(context).colorScheme.background),
+          ),
           actions: [
             IconButton(
                 onPressed: () {
@@ -22,11 +34,20 @@ class ChatScreen extends StatelessWidget {
                 icon: const Icon(Icons.exit_to_app, color: Color(0xff1ed760))),
           ],
         ),
-        body: const Column(
-          children: [
-            Expanded(child: ChatMessages()),
-            NewMessage(),
-          ],
+        body: Container(
+          height: double.infinity,
+          width: double.infinity,
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(colors: [
+            Color(0xff334e6b),
+            Color(0xff121212),
+          ], end: Alignment.bottomCenter, begin: Alignment.topCenter)),
+          child: const Column(
+            children: [
+              Expanded(child: ChatMessages()),
+              NewMessage(),
+            ],
+          ),
         ));
   }
 }

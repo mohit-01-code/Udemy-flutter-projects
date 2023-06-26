@@ -47,7 +47,7 @@ class MessageBubble extends StatelessWidget {
       children: [
         if (userImage != null)
           Positioned(
-            top: 15,
+            top: 20,
             // Align user image to the right, if the message is from me.
             right: isMe ? 0 : null,
             child: CircleAvatar(
@@ -55,13 +55,13 @@ class MessageBubble extends StatelessWidget {
                 userImage!,
               ),
               backgroundColor: theme.colorScheme.primary.withAlpha(180),
-              radius: 23,
+              radius: 15,
             ),
           ),
         Container(
           // Add some margin to the edges of the messages, to allow space for the
           // user's image.
-          margin: const EdgeInsets.symmetric(horizontal: 46),
+          margin: const EdgeInsets.symmetric(horizontal: 30),
           child: Row(
             // The side of the chat screen the message should show at.
             mainAxisAlignment:
@@ -82,9 +82,9 @@ class MessageBubble extends StatelessWidget {
                       ),
                       child: Text(
                         username!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: Theme.of(context).colorScheme.background,
                         ),
                       ),
                     ),
