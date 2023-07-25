@@ -19,6 +19,7 @@ class _NewMessageState extends State<NewMessage> {
   final utils = Utils();
   http.Response? response;
   bool isSending = false;
+  String exceptionText = "";
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -59,8 +60,8 @@ class _NewMessageState extends State<NewMessage> {
     setIsSending(true);
 
     String content = await checkSentiments(enteredMessage);
-    if (content == "internet") {
-      utils.showToast("Connect to Internet");
+    if (content == "exception") {
+      utils.showToast("Exception ::: $exceptionText");
       setIsSending(false);
       return;
     } else if (content == "error") {
@@ -93,7 +94,7 @@ class _NewMessageState extends State<NewMessage> {
 
   Future<String> checkSentiments(String message) async {
     String apiKey =
-        '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'; // Replace with your API key
+        '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'; // Replace with your API key
     const apiUrl = 'https://api.openai.com/v1/chat/completions';
     final headers = {
       'Authorization': 'Bearer $apiKey', // Replace with your actual API key
@@ -124,7 +125,8 @@ class _NewMessageState extends State<NewMessage> {
         return 'error';
       }
     } catch (e) {
-      return 'internet';
+      exceptionText = e.toString();
+      return 'exception';
     }
   }
 
